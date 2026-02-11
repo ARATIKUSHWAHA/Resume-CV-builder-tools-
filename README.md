@@ -1,156 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Resume Builder - Free Tool</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        .a4-page {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        @media (max-width: 768px) {
-            .a4-page { width: 100%; min-height: auto; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Professional Resume Builder</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+.a4{
+  width:210mm;
+  min-height:297mm;
+  background:white;
+}
+.input{
+  width:100%;
+  padding:8px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+</style>
 </head>
-<body class="bg-gray-100 font-sans">
 
-    <nav class="bg-blue-600 p-4 text-white shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">📄 Smart Resume Builder</h1>
-            <button onclick="downloadPDF()" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded font-bold shadow">
-                Download PDF
-            </button>
-        </div>
-    </nav>
+<body class="bg-gray-100">
 
-    <div class="container mx-auto mt-8 p-4 flex flex-col md:flex-row gap-8">
-        
-        <div class="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md h-fit">
-            <h2 class="text-xl font-bold mb-4 text-gray-700">✏️ Enter Your Details</h2>
-            
-            <div class="space-y-3 mb-6">
-                <input type="text" id="nameInput" placeholder="Full Name" class="w-full p-2 border rounded" oninput="updateResume()">
-                <input type="text" id="jobTitleInput" placeholder="Job Title (e.g. Web Developer)" class="w-full p-2 border rounded" oninput="updateResume()">
-                <input type="text" id="phoneInput" placeholder="Phone Number" class="w-full p-2 border rounded" oninput="updateResume()">
-                <input type="email" id="emailInput" placeholder="Email Address" class="w-full p-2 border rounded" oninput="updateResume()">
-                <input type="text" id="linkedinInput" placeholder="LinkedIn / Portfolio URL" class="w-full p-2 border rounded" oninput="updateResume()">
-            </div>
+<!-- NAV -->
+<div class="bg-blue-700 text-white p-4 flex justify-between items-center">
+<h1 class="font-bold text-xl">📄 Pro Resume Builder</h1>
+<button onclick="downloadPDF()" class="bg-green-500 px-4 py-2 rounded">
+Download PDF
+</button>
+</div>
 
-            <div class="mb-6">
-                <textarea id="summaryInput" placeholder="Professional Summary..." class="w-full p-2 border rounded h-24" oninput="updateResume()"></textarea>
-            </div>
+<div class="flex flex-col md:flex-row gap-6 p-6">
 
-            <div class="mb-6">
-                <input type="text" id="skillsInput" placeholder="Skills (comma separated)" class="w-full p-2 border rounded" oninput="updateResume()">
-                <p class="text-xs text-gray-500">e.g. HTML, CSS, Marketing, Excel</p>
-            </div>
+<!-- ================= FORM ================= -->
+<div class="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-3 overflow-y-auto max-h-screen">
 
-            <div class="bg-yellow-100 border border-yellow-300 p-4 rounded text-center text-sm text-yellow-800">
-                <strong>Start Your Career!</strong><br>
-                <a href="#" class="underline">Get Certified Course Here (Affiliate Link)</a>
-            </div>
-        </div>
+<h2 class="font-bold">Basic Info</h2>
 
-        <div class="w-full md:w-2/3 flex justify-center">
-            <div id="resume-preview" class="a4-page p-8 md:p-12 text-gray-800">
-                
-                <div class="border-b-2 border-gray-800 pb-4 mb-6">
-                    <h1 id="previewName" class="text-4xl font-bold uppercase text-gray-900">Your Name</h1>
-                    <p id="previewJob" class="text-xl text-blue-600 font-medium mt-1">Job Title</p>
-                    <div class="flex flex-wrap gap-4 text-sm mt-3 text-gray-600">
-                        <span id="previewPhone">📞 Phone</span>
-                        <span id="previewEmail">📧 Email</span>
-                        <span id="previewLinkedin">🌐 Portfolio</span>
-                    </div>
-                </div>
+<input id="photo" type="file" accept="image/*" class="input" onchange="previewPhoto(event)">
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold border-b border-gray-300 mb-2 uppercase text-gray-700">Profile</h3>
-                    <p id="previewSummary" class="text-sm leading-relaxed text-gray-600">
-                        Your professional summary will appear here. Start typing in the form to see changes instantly.
-                    </p>
-                </div>
+<input id="name" placeholder="Full Name" class="input" oninput="update()">
+<input id="job" placeholder="Job Title" class="input" oninput="update()">
+<input id="phone" placeholder="Phone" class="input" oninput="update()">
+<input id="email" placeholder="Email" class="input" oninput="update()">
+<input id="link" placeholder="LinkedIn / Portfolio" class="input" oninput="update()">
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold border-b border-gray-300 mb-2 uppercase text-gray-700">Skills</h3>
-                    <div id="previewSkills" class="flex flex-wrap gap-2">
-                        <span class="bg-gray-200 px-2 py-1 text-xs rounded">Your Skills</span>
-                    </div>
-                </div>
+<textarea id="summary" placeholder="Professional Summary" class="input h-20" oninput="update()"></textarea>
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold border-b border-gray-300 mb-2 uppercase text-gray-700">Experience</h3>
-                    <div class="mb-4">
-                        <h4 class="font-bold">Job Position</h4>
-                        <p class="text-xs text-gray-500">Company Name | 2020 - Present</p>
-                        <ul class="list-disc list-inside text-sm text-gray-600 mt-1">
-                            <li>Describe your responsibility here.</li>
-                            <li>Mention your achievements.</li>
-                        </ul>
-                    </div>
-                </div>
+<h2 class="font-bold">Skills (comma separated)</h2>
+<input id="skills" placeholder="HTML, CSS, JS, Canva" class="input" oninput="update()">
 
-                <div>
-                    <h3 class="text-lg font-bold border-b border-gray-300 mb-2 uppercase text-gray-700">Education</h3>
-                    <div>
-                        <h4 class="font-bold">Degree / Course Name</h4>
-                        <p class="text-xs text-gray-500">University Name | Passing Year</p>
-                    </div>
-                </div>
+<!-- Experience -->
+<h2 class="font-bold">Experience</h2>
+<div id="expContainer"></div>
+<button onclick="addExperience()" class="bg-blue-500 text-white px-2 py-1 rounded">
++ Add Experience
+</button>
 
-            </div>
-        </div>
-    </div>
+<!-- Education -->
+<h2 class="font-bold mt-3">Education</h2>
+<div id="eduContainer"></div>
+<button onclick="addEducation()" class="bg-blue-500 text-white px-2 py-1 rounded">
++ Add Education
+</button>
 
-    <footer class="bg-gray-800 text-white text-center p-4 mt-12">
-        <p>&copy; 2024 Smart Resume Builder. All rights reserved.</p>
-    </footer>
+</div>
 
-    <script>
-        function updateResume() {
-            // Get Values
-            document.getElementById('previewName').innerText = document.getElementById('nameInput').value || "YOUR NAME";
-            document.getElementById('previewJob').innerText = document.getElementById('jobTitleInput').value || "Job Title";
-            document.getElementById('previewPhone').innerText = "📞 " + (document.getElementById('phoneInput').value || "Phone");
-            document.getElementById('previewEmail').innerText = "📧 " + (document.getElementById('emailInput').value || "Email");
-            document.getElementById('previewLinkedin').innerText = "🌐 " + (document.getElementById('linkedinInput').value || "Link");
-            document.getElementById('previewSummary').innerText = document.getElementById('summaryInput').value || "Your summary goes here...";
+<!-- ================= RESUME ================= -->
+<div class="flex-1 flex justify-center">
+<div id="resume" class="a4 p-10 shadow">
 
-            // Handle Skills
-            const skillsText = document.getElementById('skillsInput').value;
-            const skillsContainer = document.getElementById('previewSkills');
-            skillsContainer.innerHTML = ''; // Clear old
-            if (skillsText) {
-                skillsText.split(',').forEach(skill => {
-                    if (skill.trim()) {
-                        const span = document.createElement('span');
-                        span.className = 'bg-gray-200 px-2 py-1 text-xs rounded text-gray-700 font-medium';
-                        span.innerText = skill.trim();
-                        skillsContainer.appendChild(span);
-                    }
-                });
-            } else {
-                 skillsContainer.innerHTML = '<span class="bg-gray-200 px-2 py-1 text-xs rounded">Skill 1</span>';
-            }
-        }
+<!-- Header -->
+<div class="flex gap-6 items-center mb-6">
+<img id="pPhoto" class="w-28 h-28 rounded-full object-cover border hidden">
+<div>
+<h1 id="pname" class="text-3xl font-bold">Your Name</h1>
+<p id="pjob" class="text-blue-600"></p>
+<p id="pcontact" class="text-sm"></p>
+</div>
+</div>
 
-        function downloadPDF() {
-            const element = document.getElementById('resume-preview');
-            const opt = {
-                margin:       0,
-                filename:     'my-resume.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-    </script>
+<!-- Summary -->
+<h2 class="font-bold border-b mb-1">Profile</h2>
+<p id="psummary" class="mb-4 text-sm"></p>
+
+<!-- Skills -->
+<h2 class="font-bold border-b mb-1">Skills</h2>
+<div id="pskills" class="mb-4 text-sm flex flex-wrap"></div>
+
+<!-- Experience -->
+<h2 class="font-bold border-b mb-1">Experience</h2>
+<div id="pexp" class="mb-4 text-sm"></div>
+
+<!-- Education -->
+<h2 class="font-bold border-b mb-1">Education</h2>
+<div id="pedu" class="text-sm"></div>
+
+</div>
+</div>
+</div>
+
+<script>
+let expCount = 0
+let eduCount = 0
+
+function previewPhoto(e){
+const reader = new FileReader()
+reader.onload = function(){
+pPhoto.src = reader.result
+pPhoto.classList.remove("hidden")
+}
+reader.readAsDataURL(e.target.files[0])
+}
+
+function update(){
+pname.innerText = name.value
+pjob.innerText = job.value
+pcontact.innerText = phone.value+" | "+email.value+" | "+link.value
+psummary.innerText = summary.value
+
+pskills.innerHTML = skills.value.split(',')
+.map(s=>`<span class="bg-gray-200 px-2 py-1 m-1 rounded">${s.trim()}</span>`).join('')
+
+updateExperience()
+updateEducation()
+}
+
+function addExperience(){
+expCount++
+const div = document.createElement("div")
+div.innerHTML=`
+<input placeholder="Role" class="input mt-1 expRole" oninput="update()">
+<input placeholder="Company" class="input mt-1 expCompany" oninput="update()">
+<textarea placeholder="Description" class="input mt-1 expDesc" oninput="update()"></textarea>
+`
+expContainer.appendChild(div)
+}
+
+function addEducation(){
+eduCount++
+const div = document.createElement("div")
+div.innerHTML=`
+<input placeholder="Degree" class="input mt-1 eduDegree" oninput="update()">
+<input placeholder="College" class="input mt-1 eduCollege" oninput="update()">
+`
+eduContainer.appendChild(div)
+}
+
+function updateExperience(){
+const roles=document.querySelectorAll(".expRole")
+const companies=document.querySelectorAll(".expCompany")
+const descs=document.querySelectorAll(".expDesc")
+
+let html=""
+for(let i=0;i<roles.length;i++){
+html+=`<p><b>${roles[i].value}</b> - ${companies[i].value}<br>${descs[i].value}</p><br>`
+}
+pexp.innerHTML=html
+}
+
+function updateEducation(){
+const deg=document.querySelectorAll(".eduDegree")
+const col=document.querySelectorAll(".eduCollege")
+
+let html=""
+for(let i=0;i<deg.length;i++){
+html+=`<p><b>${deg[i].value}</b><br>${col[i].value}</p><br>`
+}
+pedu.innerHTML=html
+}
+
+function downloadPDF(){
+html2pdf().from(resume).save("resume.pdf")
+}
+
+addExperience()
+addEducation()
+</script>
+
 </body>
 </html>
